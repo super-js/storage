@@ -56,7 +56,7 @@ export class S3Store extends BaseStore {
             this.setBucketName(bucket.name);
 
         } catch(err) {
-            if(err.code && err.code === "404") {
+            if(err.code && err.code === "NotFound") {
 
                 await this.createBucket(bucket);
                 this.setBucketName(bucket.name);
@@ -79,6 +79,18 @@ export class S3Store extends BaseStore {
                     LocationConstraint: this._region
                 }
             }).promise();
+
+            await this._s3.putBucketEncryption({
+                Bucket: bucket.name,
+                ServerSideEncryptionConfiguration: {
+                    Rules: [
+                        {ApplyServerSideEncryptionByDefault: {
+                            SSEAlgorithm: "AES256"
+                        }}
+                    ]
+                }
+            });
+
         } catch(err) {
             throw new StoreError({
                 originalError: err,
@@ -109,7 +121,8 @@ export class S3Store extends BaseStore {
                     Body: file.buffer,
                     ServerSideEncryption: "AES256",
                     ContentType: file.contentType,
-                    ContentEncoding: file.contentEncoding
+                    ContentEncoding: file.contentEncoding,
+                    Metadata: file.data
                 }).promise();
 
                 return {
