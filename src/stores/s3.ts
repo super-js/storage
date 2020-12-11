@@ -20,6 +20,8 @@ export interface ICreateS3StoreOptions extends IS3StoreConstructorOptions {
 
 export class S3Store extends BaseStore {
 
+    static STORE_TYPE_NAME = "S3";
+
     _s3: S3;
     _region: string;
     _bucketName: string;
@@ -80,16 +82,25 @@ export class S3Store extends BaseStore {
                 }
             }).promise();
 
-            await this._s3.putBucketEncryption({
-                Bucket: bucket.name,
-                ServerSideEncryptionConfiguration: {
-                    Rules: [
-                        {ApplyServerSideEncryptionByDefault: {
-                            SSEAlgorithm: "AES256"
-                        }}
-                    ]
-                }
-            });
+            await Promise.all([
+                this._s3.putBucketEncryption({
+                    Bucket: bucket.name,
+                    ServerSideEncryptionConfiguration: {
+                        Rules: [
+                            {ApplyServerSideEncryptionByDefault: {
+                                    SSEAlgorithm: "AES256"
+                                }}
+                        ]
+                    }
+                }),
+                this._s3.putBucketVersioning({
+                    Bucket: bucket.name,
+                    VersioningConfiguration: {
+                        MFADelete: "Disabled",
+                        Status: "Enabled"
+                    }
+                }),
+            ])
 
         } catch(err) {
             throw new StoreError({
@@ -107,6 +118,10 @@ export class S3Store extends BaseStore {
         return this._bucketName;
     }
 
+    getStoreTypeName() {
+        return S3Store.STORE_TYPE_NAME;
+    }
+
     async uploadFiles(options): Promise<IUploadedFile[]> {
         try {
             const {files} = options;
@@ -114,6 +129,7 @@ export class S3Store extends BaseStore {
             return Promise.all(files.map(async file => {
 
                 const s3key = this.getFullFilePath(file);
+                const {data = {} } = file;
 
                 const uploadedFile = await this._s3.upload({
                     Key: s3key,
@@ -122,13 +138,20 @@ export class S3Store extends BaseStore {
                     ServerSideEncryption: "AES256",
                     ContentType: file.contentType,
                     ContentEncoding: file.contentEncoding,
-                    Metadata: file.data
+                    Metadata: Object.keys(data).reduce((_, key) => {
+                        try {
+                            _[key] = data[key].toString();
+                        } catch(err) {}
+
+                        return _;
+                    }, {})
                 }).promise();
 
                 return {
                     fullFilePath: uploadedFile.Key,
                     url: uploadedFile.Location,
-                    eTag: uploadedFile.ETag
+                    eTag: uploadedFile.ETag,
+                    storageInfo: uploadedFile
                 }
 
             }));
