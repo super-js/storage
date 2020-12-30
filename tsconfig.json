@@ -1,20 +1,18 @@
 {
-  "compilerOptions": {
-    "outDir"                  : "./lib",
-    "lib"                     : ["es5", "es6", "es2019"],
-    "target"                  : "ES2019",
-    "module"                  : "commonjs",
-    "moduleResolution"        : "node",
-    "emitDecoratorMetadata"   : true,
-    "experimentalDecorators"  : true,
-    "sourceMap"               : true,
-    "esModuleInterop"         : true,
-    "declaration"             : true
+  "compilerOptions"       : {
+    "lib"                      : ["es2020"],
+    "target"                   : "es2020",
+    "module"                   : "commonjs",
+    "moduleResolution"         : "node",
+    "allowSyntheticDefaultImports": true,
+    "emitDecoratorMetadata"    : true,
+    "experimentalDecorators"   : true,
+    "sourceMap"                : true,
+    "esModuleInterop"          : true,
+    "outDir"                   : "./lib",
+    "declaration"              : true
   },
   "include": [
     "src/**/*"
-  ],
-  "exclude": [
-    "node_modules"
   ]
 }
