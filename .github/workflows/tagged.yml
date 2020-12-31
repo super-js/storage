@@ -17,9 +17,8 @@ jobs:
         run: echo "::set-output name=dir::$(yarn cache dir)"
       - uses: actions/cache@v2
         env:
-          cache-name: cache-node-modules
+          cache-name: build
         with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
