@@ -1,6 +1,6 @@
 {
   "name": "@super-js/storage",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "main": "lib/index.js",
   "repository": "git://github.com/super-js/storage",
   "files": [
