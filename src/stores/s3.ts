@@ -1,5 +1,5 @@
 import S3 from "aws-sdk/clients/s3";
-import {BaseStore, IFileInfo, IGetFilesOptions, IUploadedFile} from "./base";
+import {BaseStore, IFileInfo, IUploadedFile} from "./base";
 import {StoreError} from "./error";
 import path from "path";
 
