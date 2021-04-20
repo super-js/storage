@@ -1,22 +1,23 @@
 import S3 from "aws-sdk/clients/s3";
-import {BaseStore, IFileInfo, IUploadedFile} from "./base";
+import {BaseStore, IFileInfo, IUploadedFile, ICreateStoreOptions} from "./base";
 import {StoreError} from "./error";
 import path from "path";
-
-export interface IS3StoreConstructorOptions {
-    accessKeyId: string;
-    secretAccessKey: string;
-    region?: string;
-}
 
 export interface IS3BucketOptions {
     name: string;
     acl?: "private" | "public-read" | "public-read-write" | "authenticated-read";
 }
 
-export interface ICreateS3StoreOptions extends IS3StoreConstructorOptions {
+export interface ICreateS3StoreOptions extends ICreateStoreOptions {
+    accessKeyId: string;
+    secretAccessKey: string;
+    region?: string;
     bucket: IS3BucketOptions;
 }
+
+export interface IS3StoreConstructorOptions extends Omit<ICreateS3StoreOptions, 'bucket'> {
+}
+
 
 export class S3Store extends BaseStore {
 
@@ -40,7 +41,7 @@ export class S3Store extends BaseStore {
 
     }
 
-    static async createS3Store(options: ICreateS3StoreOptions): Promise<S3Store> {
+    static async createStore(options: ICreateS3StoreOptions): Promise<S3Store> {
         const {bucket, ...s3StoreOptions} = options;
 
         const s3Store = new S3Store(s3StoreOptions);

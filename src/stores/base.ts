@@ -9,7 +9,7 @@ export interface IFileInfo extends IBasicFileInfo {
 
 export interface IBasicFileInfo {
     fileName: string;
-    contentType: string;
+    contentType?: string;
     contentLength?: number;
     contentEncoding?: string;
 }
@@ -29,7 +29,15 @@ export interface IGetFilesOptions {
     fileKeys: string[];
 }
 
+export interface ICreateStoreOptions {
+
+}
+
 export abstract class BaseStore {
+
+    public static async createStore(options: ICreateStoreOptions): Promise<BaseStore> {
+        return null;
+    }
 
     public abstract uploadFiles(options: IUploadFilesOptions): Promise<IUploadedFile[]>;
     public abstract getFiles(options: IGetFilesOptions): Promise<IFileInfo[]>;
