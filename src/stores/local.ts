@@ -34,8 +34,6 @@ export class LocalStore extends BaseStore {
         try {
             const {files} = options;
 
-            console.log(options)
-
             return Promise.all(files.map(async file => {
 
                 const {data = {} } = file;
